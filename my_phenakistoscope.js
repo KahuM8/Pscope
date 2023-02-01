@@ -2,13 +2,21 @@ const SLICE_COUNT = 15;
 let size = 0.2;
 
 //noise variables
-let noiseScale = 0.1;
+let noiseScale = 100;
 let noiseStrength = 0.8;
 let noiseChange = 2;
 
 let bacgroundC = 100;
-let cChange = 0.2;
+let cChange = 0.05;
 
+let scaleChange = 0.1;
+let ballScale = 0.1;
+
+
+//play this music while you watch the animation for full emersion\\
+//***************************************************************\\
+// https://www.youtube.com/watch?v=VxFadPqMbfM&ab_channel=Pokeli
+//***************************************************************\\
 
 function setup_pScope(pScope) {
   pScope.output_mode(ANIMATED_DISK);
@@ -19,6 +27,7 @@ function setup_pScope(pScope) {
   pScope.load_image("ash", "png");
   pScope.load_image("dusc", "png");
   pScope.load_image("pokeBall", "png");
+  pScope.load_image_sequence("ash" , "png" ,6);
 }
 
 function setup_layers(pScope) {
@@ -72,7 +81,8 @@ function squares(x, y, animation, pScope) {
 
 function ash(x, y, animation, pScope) {
   scale(0.2);
-  pScope.draw_image("ash", x, y - 2000 - animation.wave() * 15);
+  // pScope.draw_image("ash", x, y - 2000 - animation.wave() * 15);
+  pScope.draw_image_from_sequence("ash", x, y - 2000 - animation.wave() * 15, animation.frame);  
 
 }
 
@@ -84,21 +94,21 @@ function dusc(x, y, animation, pScope) {
 }
 
 function pokeBall(x, y, animation, pScope) {
-  scale(0.2);
+  scale(ballScale + scaleChange * animation.frame);
   pScope.draw_image("pokeBall", x - animation.frame * 200, y);
 }
 
 
 function edgeWave(x, y, animation, pScope) {
 
-//make 100 lines with perlin noise for the length of the noise
+
     stroke(40);
-    strokeWeight(4);
+    strokeWeight(2);
     for (let i = 0; i < 500; i++) {
         let noiseVal = noise(i * noiseScale, animation.frame * noiseChange);
         let lineLength = noiseVal * noiseStrength;
-        rotate(2);
-        line(x + i , -1000, x + i, -1000 + lineLength *400);
+        rotate(1);
+        line(x + i/2 , -1000, x , -1000 + lineLength *300);
     }
 
 
@@ -113,8 +123,6 @@ function slice(x, y, animation, pScope){
         cChange *= -1;
     }
    
-
-
     let angleOffset = (360 / SLICE_COUNT) / 2
     let backgroundArcStart = 270 - angleOffset;
     let backgroundArcEnd = 270 + angleOffset;

@@ -1,8 +1,17 @@
 const SLICE_COUNT = 15;
 let size = 0.2;
 
+//noise variables
+let noiseScale = 0.1;
+let noiseStrength = 0.8;
+let noiseChange = 2;
+
+let bacgroundC = 100;
+let cChange = 0.2;
+
+
 function setup_pScope(pScope) {
-  pScope.output_mode(ANIMATED_FRAME);
+  pScope.output_mode(ANIMATED_DISK);
   pScope.scale_for_screen(true);
   pScope.draw_layer_boundaries(true);
   pScope.set_direction(CCW);
@@ -13,11 +22,21 @@ function setup_pScope(pScope) {
 }
 
 function setup_layers(pScope) {
+   
 
-  new PLayer(null, 150);  //lets us draw the whole circle background, ignoring the boundaries
+  new PLayer(null, 100);  //lets us draw the whole circle background, ignoring the boundaries
+  
 
-  //draw an elipse under duscul
 
+
+    var  sliceLayer = new PLayer(slice);
+    
+
+    var edgeWaveLayer = new PLayer(edgeWave);
+    edgeWaveLayer.mode(RING);
+
+
+   
 
 
 
@@ -61,13 +80,7 @@ function dusc(x, y, animation, pScope) {
 
   scale(size);
 
-  if (animation.frame < .8) {
-    size = size - 0.005;
-  }
-  if (size <= 0) {
-    size = 0.2;
-  }
-  pScope.draw_image("dusc", x + animation.wave() * 100, y - 4000 *);
+  pScope.draw_image("dusc", x + animation.wave() * 100, y - 4000);
 }
 
 function pokeBall(x, y, animation, pScope) {
@@ -78,5 +91,33 @@ function pokeBall(x, y, animation, pScope) {
 
 function edgeWave(x, y, animation, pScope) {
 
+//make 100 lines with perlin noise for the length of the noise
+    stroke(40);
+    strokeWeight(4);
+    for (let i = 0; i < 500; i++) {
+        let noiseVal = noise(i * noiseScale, animation.frame * noiseChange);
+        let lineLength = noiseVal * noiseStrength;
+        rotate(2);
+        line(x + i , -1000, x + i, -1000 + lineLength *400);
+    }
+
+
+
+}
+
+function slice(x, y, animation, pScope){
+    //make an ark that covers the entire slice
+    bacgroundC += cChange;
+    fill(bacgroundC);
+    if(bacgroundC > 110 || bacgroundC < 90){
+        cChange *= -1;
+    }
+   
+
+
+    let angleOffset = (360 / SLICE_COUNT) / 2
+    let backgroundArcStart = 270 - angleOffset;
+    let backgroundArcEnd = 270 + angleOffset;
+    arc(x, y, 2000, 2000, backgroundArcStart, backgroundArcEnd); // draws "pizza slice" in the background
 
 }

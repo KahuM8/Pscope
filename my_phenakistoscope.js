@@ -1,5 +1,5 @@
 const SLICE_COUNT = 15;
-let size = 0.2;
+
 
 //noise variables
 let noiseScale = 100;
@@ -34,12 +34,13 @@ function setup_pScope(pScope) {
   pScope.load_image("ash", "png");
   pScope.load_image("dusc", "png");
   pScope.load_image("pokeBall", "png");
-  pScope.load_image_sequence("ash" , "png" ,6);
+  pScope.load_image_sequence("ash", "png", 6);
   pScope.load_image("spooky", "png");
+  pScope.load_image("bBall", "png");
 }
 
 function setup_layers(pScope) {
-   
+
 
   new PLayer(null, 90);  //lets us draw the whole circle background, ignoring the boundaries
   var edgeWaveLayer = new PLayer(edgeWave);
@@ -50,8 +51,8 @@ function setup_layers(pScope) {
   var scaryFaceLayer = new PLayer(scaryFace);
   scaryFaceLayer.mode(SWIRL(2));
   scaryFaceLayer.set_boundary(800, 500);
-  var groundLayer = new PLayer(ground);
-  groundLayer.mode(RING);
+  var Bball = new PLayer(bBall);
+  Bball.mode(RING);
   var ashLayer = new PLayer(ash);
   ashLayer.mode(RING);
   ashLayer.set_boundary(0, 0);
@@ -64,57 +65,50 @@ function setup_layers(pScope) {
 }
 
 function ash(x, y, animation, pScope) {
-  scale(0.33);
-  // pScope.draw_image("ash", x, y - 2000 - animation.wave() * 15);
-  pScope.draw_image_from_sequence("ash", x -25, y - 1400 - animation.wave() * 15, animation.frame);  
-
+  pScope.draw_image_from_sequence("ash", x - 25, y - 450 - animation.wave() * 15, animation.frame);
 }
 
 function dusc(x, y, animation, pScope) {
 
-  scale(size);
-  // if(animation.frame < 0.7){
-    pScope.draw_image("dusc", x + animation.wave() * 100, y - 4000);
-  // }
+  pScope.draw_image("dusc", x + animation.wave() * 20, y - 800);
 }
 
 function pokeBall(x, y, animation, pScope) {
   scale(ballScale + scaleChange * animation.frame);
-  pScope.draw_image("pokeBall", x,y);
+  pScope.draw_image("pokeBall", x, y);
 }
 
 
 function edgeWave(x, y, animation, pScope) {
-    stroke(40);
-    strokeWeight(2);
-    for (let i = 0; i < 500; i++) {
-        let noiseVal = noise(i * noiseScale, animation.frame * noiseChange);
-        let lineLength = noiseVal * noiseStrength;
-        rotate(1);
-        line(x + i/2 , -1000, x , -1000 + lineLength *300);
-    }
+  stroke(30);
+  strokeWeight(2);
+  for (let i = 0; i < 400; i++) {
+    let noiseVal = noise(i * noiseScale, animation.frame * noiseChange);
+    let lineLength = noiseVal * noiseStrength;
+    rotate(1);
+    line(x + i / 2, -1000, x, -1000 + lineLength * 300);
+  }
 }
 
 
 
 
 //function that draws a pokeball in the center of the screen
-function ground(x, y, animation, pScope) {
-  scale(2.2);
-  pScope.draw_image("pokeBall", x, y);
+function bBall(x, y, animation, pScope) {
+  pScope.draw_image("bBall", x, y);
 }
 
 
 //spooky layer
 function scaryFace(x, y, animation, pScope) {
   scale(0.1 - scaryFaceScaleChange * animation.frame);
-  pScope.draw_image("spooky", x - animation.wave() * 100,y );
+  pScope.draw_image("spooky", x - animation.wave() * 100, y);
 }
 
 //smoke layer
 class Particle {
   constructor() {
-    this.x = 0 + random(0,50);
+    this.x = 0 + random(0, 50);
     this.y = 0;
     this.vx = random(-0.5, 0.5);
     this.vy = random(-1, -0.2);
@@ -124,7 +118,7 @@ class Particle {
   update() {
     this.x += this.vx;
     this.y += this.vy;
-    this.alpha -= random(0,2);
+    this.alpha -= random(0, 2);
   }
 }
 
@@ -134,14 +128,14 @@ class Particle {
  */
 function smoke(x, y, animation, pScope) {
   noStroke();
-  if(particles.length < 500){
-  let p = new Particle();
-  particles.push(p);
+  if (particles.length < 200) {
+    let p = new Particle();
+    particles.push(p);
   }
   for (let i = 0; i < particles.length; i++) {
     particles[i].update();
-    fill(48,36,59, particles[i].alpha);
-    ellipse(x + particles[i].x - 150, y+particles[i].y - 150, random(12,20), random(12,20));
+    fill(48, 36, 59, particles[i].alpha);
+    ellipse(x + particles[i].x - 150, y + particles[i].y - 150, random(12, 20), random(12, 20));
     if (particles[i].alpha <= 0) {
       particles.splice(i, 1);
     }
